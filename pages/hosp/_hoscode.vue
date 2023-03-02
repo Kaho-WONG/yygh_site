@@ -167,6 +167,7 @@ import "~/assets/css/hospital_personal.css";
 import "~/assets/css/hospital.css";
 
 import hospApi from "@/api/hosp";
+import cookie from "js-cookie";
 
 export default {
   data() {
@@ -209,8 +210,17 @@ export default {
 
     //点击子科室后转到对应科室页面
     schedule(depcode) {
+      // 登录判断
+      let token = cookie.get("token");
+      if (!token) {
+        loginEvent.$emit("loginDialogEvent"); //未登录状态下会拉起登陆页面
+        return;
+      }
       window.location.href =
-        "/hosp/schedule?hoscode=" + this.hoscode + "&depcode=" + depcode;
+        "/hosp/schedule?hoscode=" +
+        this.hospital.hoscode +
+        "&depcode=" +
+        depcode;
     },
   },
 };
