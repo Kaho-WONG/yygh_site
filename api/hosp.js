@@ -36,4 +36,28 @@ export default {
         })
     },
 
+    //分页获取指定医院和科室的可预约排班数据
+    getBookingScheduleRule(page, limit, hoscode, depcode) {
+        return request({
+            url: `${api_name}/auth/getBookingScheduleRule/${page}/${limit}/${hoscode}/${depcode}`,
+            method: 'get'
+        })
+    },
+
+    //获取指定医院和科室在workDate的排班信息
+    findScheduleList(hoscode, depcode, workDate) {
+        return request({
+            url: `${api_name}/auth/findScheduleList/${hoscode}/${depcode}/${workDate}`,
+            method: 'get'
+        })
+    },
+
+    //根据排班id获取排班数据
+    getSchedule(id) {
+        return request({
+            url: `${api_name}/getSchedule/${id}`,
+            method: 'get'
+        })
+    },
+
 }
