@@ -2,7 +2,10 @@
   <div class="header-container">
     <div class="wrapper">
       <!-- logo -->
-      <div class="left-wrapper v-link selected">
+      <div
+        class="left-wrapper v-link selected"
+        onClick="javascript:window.location='/'"
+      >
         <img
           style="width: 50px"
           width="50"
@@ -201,6 +204,17 @@ export default {
       dialogAtrr: defaultDialogAtrr,
 
       name: "", // 用户登录显示的名称
+
+      searchObj: {},
+      page: 1,
+      limit: 10,
+
+      hosname: "", //医院名称
+      hostypeList: [], //医院等级集合
+      districtList: [], //地区集合
+
+      hostypeActiveIndex: 0,
+      provinceActiveIndex: 0,
     };
   },
 
@@ -365,6 +379,18 @@ export default {
       } else {
         window.location.href = command;
       }
+    },
+
+    //在输入框输入值，弹出下拉框，显示相关内容
+    querySearchAsync(queryString, cb) {
+      this.searchObj = [];
+      if (queryString == "") return;
+      hospitalApi.getByHosname(queryString).then((response) => {
+        for (let i = 0, len = response.data.length; i < len; i++) {
+          response.data[i].value = response.data[i].hosname;
+        }
+        cb(response.data);
+      });
     },
 
     handleSelect(item) {
