@@ -152,8 +152,8 @@
         <div class="operate-view" style="height: 350px">
           <div class="wrapper wechat">
             <div>
-              <img src="images/weixin.jpg" alt="" />
-
+              <!-- 显示微信支付二维码 -->
+              <qriously :value="payObj.codeUrl" :size="220" />
               <div
                 style="
                   text-align: center;
@@ -176,6 +176,8 @@
 import "~/assets/css/hospital_personal.css";
 import "~/assets/css/hospital.css";
 import orderInfoApi from "@/api/orderInfo";
+import weixinApi from "@/api/weixin";
+
 export default {
   data() {
     return {
@@ -198,6 +200,40 @@ export default {
         console.log(response.data);
         this.orderInfo = response.data;
       });
+    },
+    //微信支付二维码生成
+    pay() {
+      this.dialogPayVisible = true;
+      weixinApi.createNative(this.orderId).then((response) => {
+        this.payObj = response.data;
+        if (this.payObj.codeUrl == "") {
+          //生成失败
+          this.dialogPayVisible = false;
+          this.$message.error("支付错误");
+        } else {
+          //每隔3秒调用查询支付状态接口
+          this.timer = setInterval(() => {
+            this.queryPayStatus(this.orderId);
+          }, 3000);
+        }
+      });
+    },
+    //查询支付状态
+    queryPayStatus(orderId) {
+      weixinApi.queryPayStatus(orderId).then((response) => {
+        if (response.message == "支付中") {
+          return;
+        }
+        //如果不是支付中状态，则清楚定时器效果，停止轮询
+        clearInterval(this.timer);
+        window.location.reload();
+      });
+    },
+    //关闭微信支付弹出框
+    closeDialog() {
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
     },
   },
 };
